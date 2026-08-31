@@ -27,14 +27,14 @@ export default function Manifesto() {
   const { t } = useI18n();
 
   return (
-    <AppLayout crumbs={[{ label: "Manifesto" }]}>
+    <AppLayout crumbs={[{ label: t("manifesto.crumb") }]}>
       <div className="mx-auto max-w-2xl px-6 py-12 sm:py-24">
-        <span className="eyebrow">Our point of view</span>
+        <span className="eyebrow">{t("manifesto.eyebrow")}</span>
         <h1 className="mb-3 mt-2 font-serif text-4xl font-medium tracking-tight sm:text-5xl">
-          The ROUT manifesto
+          {t("manifesto.title")}
         </h1>
         <p className="mb-12 border-b-2 border-dashed border-border-ink/25 pb-8 font-sans text-lg text-muted-foreground">
-          Why a QR generator needs a point of view.
+          {t("manifesto.intro")}
         </p>
 
         {/* Each point sits in its own light container, matching /privacy and /terms. */}
@@ -68,7 +68,7 @@ export default function Manifesto() {
 
         <div className="mt-10 border-t-2 border-dashed border-border-ink/25 pt-8">
           <p className="font-mono text-sm text-muted-foreground">
-            Part of the Delplanche ecosystem —{" "}
+            {t("manifesto.outro")}{" "}
             <a
               href="https://delplanche.com"
               target="_blank"
@@ -86,16 +86,16 @@ export default function Manifesto() {
           className="mt-8 rounded-2xl border border-border bg-card p-6 text-center shadow-sm sm:p-8"
         >
           <h2 className="font-serif text-xl font-semibold text-foreground sm:text-2xl">
-            Ready to create sovereign, zero-tracking QR codes?
+            {t("manifesto.cta.title")}
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Everything is generated in your browser. No account, no payload upload, no tracking.
+            {t("manifesto.cta.body")}
           </p>
           <Link
             to="/"
             className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
           >
-            Open Generator
+            {t("manifesto.cta.button")}
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </section>

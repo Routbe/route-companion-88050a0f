@@ -492,10 +492,10 @@ const Index = () => {
                   className="w-full rounded-2xl border border-dashed border-border bg-card/60 p-4 text-left transition-colors hover:bg-card"
                 >
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <Link2 className="h-4 w-4" /> Maak er een short link van
+                    <Link2 className="h-4 w-4" /> {t("home.shortlink.cta.title")}
                   </span>
                   <span className="mt-1 block text-xs text-muted-foreground">
-                    Kies je domein (ROUT of je eigen domein), krijg een korte link en tel elke scan.
+                    {t("home.shortlink.cta.description")}
                   </span>
                 </button>
               </div>

@@ -12,6 +12,7 @@ import {
 import { Link } from "@/lib/router-compat";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { BUNNY_PATH } from "@/lib/site";
+import { useI18n } from "@/lib/i18n";
 
 /**
  * Publieke marketingpagina van ROUT.
@@ -23,63 +24,79 @@ import { BUNNY_PATH } from "@/lib/site";
 
 const HANDLE_RE = /[^a-z0-9._-]/g;
 
-/** Eerlijke vergelijking met de klassieke link-in-bio-diensten. */
-const COMPARISON = [
+/** Eerlijke vergelijking met de klassieke link-in-bio-diensten — keys resolved via t(). */
+const COMPARISON_KEYS = [
   {
-    feature: "🔒 Privacy",
-    others: "Trackers, cookies & cookiemuren",
-    rout: "Nul trackers, nul cookiemuren",
+    feature: "about.comparison.privacy.feature",
+    others: "about.comparison.privacy.others",
+    rout: "about.comparison.privacy.rout",
   },
   {
-    feature: "⚡ QR-codes",
-    others: "Rasterafbeelding, vaak achter een betaalmuur",
-    rout: "Vector SVG/PDF-export voor echte print",
+    feature: "about.comparison.qr.feature",
+    others: "about.comparison.qr.others",
+    rout: "about.comparison.qr.rout",
   },
   {
-    feature: "📊 Statistieken",
-    others: "Bezoekersprofielen per persoon",
-    rout: "Geaggregeerde tellingen zonder cookies",
+    feature: "about.comparison.stats.feature",
+    others: "about.comparison.stats.others",
+    rout: "about.comparison.stats.rout",
   },
   {
-    feature: "🌐 Eigen domein",
-    others: "Enkel in dure plannen",
-    rout: "CNAME naar links.jouwdomein.be",
+    feature: "about.comparison.domain.feature",
+    others: "about.comparison.domain.others",
+    rout: "about.comparison.domain.rout",
   },
   {
-    feature: "📦 Je data",
-    others: "Export beperkt of onmogelijk",
-    rout: "Volledige .json-export in één klik",
+    feature: "about.comparison.data.feature",
+    others: "about.comparison.data.others",
+    rout: "about.comparison.data.rout",
   },
 ] as const;
 
-const FEATURES = [
+const FEATURE_KEYS = [
   {
     icon: Sparkles,
-    eyebrow: "Soevereine profielen",
-    title: "Schone URL's, elf luxe thema's, nul rommel",
-    body: "Geverifieerde leden krijgen rout.be/naam, iedereen anders rout.be/u/alias. Glassmorphism-kaarten, serif-typografie en rustige animaties — geen banners, geen aanbevolen accounts, geen algoritme.",
-    points: ["rout.be/naam of rout.be/u/alias", "11 luxe thema's", "0 % visuele rommel"],
+    eyebrow: "about.features.profiles.eyebrow",
+    title: "about.features.profiles.title",
+    body: "about.features.profiles.body",
+    points: [
+      "about.features.profiles.point1",
+      "about.features.profiles.point2",
+      "about.features.profiles.point3",
+    ],
   },
   {
     icon: BadgeCheck,
-    eyebrow: "Verificatie",
-    title: "Blauw vinkje én privacyschild",
-    body: "Het blauwe vinkje bevestigt je identiteit via een bankoverschrijving of eID. Het privacyschild bevestigt enkel dat je een mens bent — zonder dat we je documenten bewaren, je gedrag volgen of iets doorverkopen.",
-    points: ["Bank- of eID-verificatie", "Menselijkheidscheck zonder tracking", "Geen datahandel"],
+    eyebrow: "about.features.verification.eyebrow",
+    title: "about.features.verification.title",
+    body: "about.features.verification.body",
+    points: [
+      "about.features.verification.point1",
+      "about.features.verification.point2",
+      "about.features.verification.point3",
+    ],
   },
   {
     icon: Mail,
-    eyebrow: "SecureShield™",
-    title: "Je echte e-mailadres blijft van jou",
-    body: "Krijg een relayadres op @rout.be of @u.rout.be. Alles wordt doorgestuurd naar je echte mailbox, die nergens zichtbaar is. Je betaalt per maand een fractie van een euro uit je prepaid saldo — geen abonnement.",
-    points: ["naam@rout.be voor geverifieerde leden", "alias@u.rout.be voor iedereen", "€0,09 per maand"],
+    eyebrow: "about.features.secureshield.eyebrow",
+    title: "about.features.secureshield.title",
+    body: "about.features.secureshield.body",
+    points: [
+      "about.features.secureshield.point1",
+      "about.features.secureshield.point2",
+      "about.features.secureshield.point3",
+    ],
   },
   {
     icon: HeartHandshake,
-    eyebrow: "Creator support",
-    title: "Donaties zonder platformcommissie",
-    body: "Geverifieerde makers zetten een donatiepagina open op rout.be/naam/donate. Betalen kan met Bancontact, iDEAL, Apple Pay, kaart of overschrijving — en wat je krijgt, blijft van jou.",
-    points: ["0 % platformcommissie", "Lokale betaalmethodes", "Directe uitbetaling"],
+    eyebrow: "about.features.creator.eyebrow",
+    title: "about.features.creator.title",
+    body: "about.features.creator.body",
+    points: [
+      "about.features.creator.point1",
+      "about.features.creator.point2",
+      "about.features.creator.point3",
+    ],
   },
 ] as const;
 
@@ -95,10 +112,10 @@ const ROUT_VCARD = [
   "END:VCARD",
 ].join("\r\n");
 
-const PROFILE_LINKS = [
-  { label: "💻 GitHub Repository", href: "https://github.com/Routbe" },
-  { label: "💬 Matrix / Fediverse Channel", href: "https://matrix.to/#/#rout:matrix.org" },
-  { label: "✉️ Contact Team", href: "mailto:hallo@rout.be" },
+const PROFILE_LINK_KEYS = [
+  { labelKey: "about.profileLinks.github", href: "https://github.com/Routbe" },
+  { labelKey: "about.profileLinks.matrix", href: "https://matrix.to/#/#rout:matrix.org" },
+  { labelKey: "about.profileLinks.contact", href: "mailto:hallo@rout.be" },
 ] as const;
 
 function downloadVcard() {
@@ -115,6 +132,12 @@ function downloadVcard() {
 
 /** Authentiek, interactief @rout profiel — geen dummy-persoon. */
 function RoutProfileCard() {
+  const { t } = useI18n();
+  const badges = useMemo(
+    () => [t("about.profileCard.badge.verifiedPro"), t("about.profileCard.badge.sovereignCore"), t("about.profileCard.badge.openSource")],
+    [t]
+  );
+
   return (
     <div className="relative mx-auto w-full max-w-[340px]">
       <div aria-hidden className="absolute -inset-6 rounded-[2.5rem] bg-foreground/5 blur-2xl" />
@@ -131,7 +154,7 @@ function RoutProfileCard() {
           <div className="relative">
             <img
               src={BUNNY_PATH}
-              alt="Het officiële ROUT-embleem met het witte konijn"
+              alt={t("about.profileCard.emblemAlt")}
               className="h-20 w-20 rounded-full border border-border bg-background object-contain p-3"
               loading="lazy"
             />
@@ -141,7 +164,7 @@ function RoutProfileCard() {
           </div>
           <p className="mt-4 inline-flex items-center gap-1.5 font-serif text-lg font-medium text-foreground">
             ROUT
-            <BadgeCheck className="h-4 w-4 text-primary" aria-label="Geverifieerd" />
+            <BadgeCheck className="h-4 w-4 text-primary" aria-label={t("about.profileCard.verifiedAriaLabel")} />
           </p>
           <a
             href="https://rout.be"
@@ -152,10 +175,10 @@ function RoutProfileCard() {
             rout.be/rout
           </a>
           <p className="mt-1 text-[11px] text-muted-foreground">
-            Sovereign QR &amp; Identity Infrastructure • Brussels, Belgium
+            {t("about.profileCard.tagline")}
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-1.5">
-            {["Verified Pro", "Sovereign Core", "Open Source"].map((badge) => (
+            {badges.map((badge) => (
               <span
                 key={badge}
                 className="rounded-full border border-border bg-background px-2.5 py-1 text-[10px] tracking-wide text-muted-foreground"
@@ -165,7 +188,7 @@ function RoutProfileCard() {
             ))}
           </div>
           <div className="mt-5 w-full space-y-2">
-            {PROFILE_LINKS.map((link) => (
+            {PROFILE_LINK_KEYS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
@@ -173,7 +196,7 @@ function RoutProfileCard() {
                 rel="noreferrer noopener"
                 className="block rounded-xl border border-border bg-background/70 px-4 py-2.5 text-left text-xs text-foreground transition-colors hover:bg-accent"
               >
-                {link.label}
+                {t(link.labelKey)}
               </a>
             ))}
             <button
@@ -182,7 +205,7 @@ function RoutProfileCard() {
               className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-foreground px-4 text-xs font-medium text-background transition-opacity hover:opacity-90"
             >
               <Download className="h-3.5 w-3.5" aria-hidden />
-              📇 Contactkaart opslaan (.vcf)
+              {t("about.profileCard.saveVcard")}
             </button>
           </div>
           <p className="mt-6 text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -195,6 +218,7 @@ function RoutProfileCard() {
 }
 
 function ComparisonMatrix() {
+  const { t } = useI18n();
   return (
     <>
       {/* Desktop: vaste 3-koloms tabel */}
@@ -202,17 +226,17 @@ function ComparisonMatrix() {
         <table className="w-full table-fixed text-sm">
           <thead>
             <tr className="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <th className="w-1/3 p-4 font-semibold">Functie</th>
-              <th className="w-1/3 p-4 font-semibold">Klassieke link-tools</th>
-              <th className="w-1/3 p-4 font-semibold">ROUT</th>
+              <th className="w-1/3 p-4 font-semibold">{t("about.comparison.header.feature")}</th>
+              <th className="w-1/3 p-4 font-semibold">{t("about.comparison.header.others")}</th>
+              <th className="w-1/3 p-4 font-semibold">{t("about.comparison.header.rout")}</th>
             </tr>
           </thead>
           <tbody>
-            {COMPARISON.map((row) => (
+            {COMPARISON_KEYS.map((row) => (
               <tr key={row.feature} className="border-t border-border align-top">
-                <td className="w-1/3 p-4 font-medium text-foreground">{row.feature}</td>
-                <td className="w-1/3 p-4 text-muted-foreground">{row.others}</td>
-                <td className="w-1/3 p-4 text-foreground">{row.rout}</td>
+                <td className="w-1/3 p-4 font-medium text-foreground">{t(row.feature)}</td>
+                <td className="w-1/3 p-4 text-muted-foreground">{t(row.others)}</td>
+                <td className="w-1/3 p-4 text-foreground">{t(row.rout)}</td>
               </tr>
             ))}
           </tbody>
@@ -221,21 +245,21 @@ function ComparisonMatrix() {
 
       {/* Mobiel: verticale vergelijkingskaarten */}
       <div className="mt-8 block md:hidden">
-        {COMPARISON.map((row) => (
+        {COMPARISON_KEYS.map((row) => (
           <div
             key={row.feature}
             className="mb-3 space-y-2 rounded-2xl border border-border/80 bg-card p-4 shadow-sm"
           >
-            <p className="text-sm font-medium text-foreground">{row.feature}</p>
+            <p className="text-sm font-medium text-foreground">{t(row.feature)}</p>
             <div className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
               <span className="mb-1 block text-[10px] uppercase tracking-wide">
-                Klassieke tools
+                {t("about.comparison.header.others")}
               </span>
-              {row.others}
+              {t(row.others)}
             </div>
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-900 dark:text-emerald-200">
-              <span className="mb-1 block text-[10px] uppercase tracking-wide">ROUT</span>
-              {row.rout}
+              <span className="mb-1 block text-[10px] uppercase tracking-wide">{t("about.comparison.header.rout")}</span>
+              {t(row.rout)}
             </div>
           </div>
         ))}
@@ -245,6 +269,7 @@ function ComparisonMatrix() {
 }
 
 function HandleClaim() {
+  const { t } = useI18n();
   const [value, setValue] = useState("");
   const handle = useMemo(() => value.toLowerCase().replace(HANDLE_RE, "").slice(0, 30), [value]);
   const target = handle
@@ -261,7 +286,7 @@ function HandleClaim() {
     >
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm sm:flex-row sm:items-center">
         <label htmlFor="claim-handle" className="sr-only">
-          Kies je handle
+          {t("about.handleClaim.label")}
         </label>
         <div className="flex min-w-0 flex-1 items-center gap-1 px-3">
           <span className="shrink-0 font-mono text-sm text-muted-foreground">rout.be/</span>
@@ -269,7 +294,7 @@ function HandleClaim() {
             id="claim-handle"
             value={handle}
             onChange={(event) => setValue(event.target.value)}
-            placeholder="jouwnaam"
+            placeholder={t("about.handleClaim.placeholder")}
             autoComplete="off"
             spellCheck={false}
             className="min-w-0 flex-1 bg-transparent py-2.5 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
@@ -279,13 +304,12 @@ function HandleClaim() {
           type="submit"
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-90"
         >
-          Claim handle
+          {t("about.handleClaim.submit")}
           <ArrowRight className="h-4 w-4" aria-hidden />
         </button>
       </div>
       <p className="mt-2 px-2 text-xs text-muted-foreground">
-        Enkel kleine letters, cijfers, punt, streepje en liggend streepje. Nooit willekeurige
-        cijfers achter je naam.
+        {t("about.handleClaim.hint")}
       </p>
     </form>
   );
@@ -294,31 +318,42 @@ function HandleClaim() {
 const CARD = "rounded-3xl border border-border/80 bg-card/90 p-6 shadow-sm sm:p-8";
 
 export default function About() {
+  const { t } = useI18n();
+  const features = useMemo(
+    () =>
+      FEATURE_KEYS.map((feature) => ({
+        icon: feature.icon,
+        eyebrow: t(feature.eyebrow),
+        title: t(feature.title),
+        body: t(feature.body),
+        points: feature.points.map((point) => t(point)),
+      })),
+    [t]
+  );
+
   return (
-    <AppLayout crumbs={[{ label: "Over ROUT" }]}>
+    <AppLayout crumbs={[{ label: t("about.crumb") }]}>
       {/* pb-28 houdt de laatste CTA vrij van de footer en de zwevende knop */}
       <div className="mx-auto max-w-5xl px-4 py-12 pb-28 sm:px-6 sm:py-20">
         <section className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <span className="eyebrow">Soevereine digitale identiteit</span>
+            <span className="eyebrow">{t("about.hero.eyebrow")}</span>
             <h1 className="mb-4 mt-2 font-serif text-2xl font-medium leading-tight tracking-tight text-foreground sm:text-4xl">
-              Het soevereine alternatief voor je digitale identiteit en link-in-bio.
+              {t("about.hero.title")}
             </h1>
             <p className="max-w-xl font-sans text-base text-muted-foreground sm:text-lg">
-              Eén rustige pagina met je naam, je links, je verificatie en je donaties. Europese
-              infrastructuur, geen advertenties, geen trackers, geen datahandel — en jij houdt de
-              sleutels.
+              {t("about.hero.body")}
             </p>
             <HandleClaim />
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> 0 % data-oogst
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> {t("about.hero.badge.noDataHarvest")}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <Palette className="h-3.5 w-3.5" aria-hidden /> 11 luxe thema's
+                <Palette className="h-3.5 w-3.5" aria-hidden /> {t("about.hero.badge.themes")}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5" aria-hidden /> SecureShield™ relay
+                <Mail className="h-3.5 w-3.5" aria-hidden /> {t("about.hero.badge.secureshield")}
               </span>
             </div>
           </div>
@@ -326,7 +361,7 @@ export default function About() {
         </section>
 
         <section className="mt-20 grid gap-4 sm:mt-28 sm:grid-cols-2">
-          {FEATURES.map(({ icon: Icon, ...feature }) => (
+          {features.map(({ icon: Icon, ...feature }) => (
             <article key={feature.title} className={CARD}>
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-background">
                 <Icon className="h-4 w-4 text-foreground" aria-hidden />
@@ -357,23 +392,18 @@ export default function About() {
 
         <section className={`mt-16 ${CARD}`}>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Onafhankelijk &amp; soeverein
+            {t("about.why.eyebrow")}
           </p>
           <h2 className="mt-2 font-serif text-xl font-semibold text-foreground sm:text-2xl">
-            Waarom we ROUT gebouwd hebben
+            {t("about.why.title")}
           </h2>
           <div className="mt-4 grid gap-5 sm:grid-cols-2">
             <p className="text-[15px] leading-relaxed text-muted-foreground">
-              Je online identiteit hoort niet thuis bij een advertentiebedrijf. De meeste
-              link-in-bio-diensten leven van meten, profileren en doorverkopen: elke klik wordt een
-              datapunt, elk profiel een advertentieplaats. ROUT is het tegenovergestelde — geen
-              trackers, geen cookiemuur, geen algoritme dat bepaalt wie jouw links te zien krijgt.
+              {t("about.why.body1")}
             </p>
             <p className="text-[15px] leading-relaxed text-muted-foreground">
-              We draaien op eigen infrastructuur in Europa, bewaren enkel wat een profiel nodig
-              heeft, en geven je alles terug wanneer je dat wil: één klik exporteert je volledige
-              profiel als <code className="font-mono text-xs">.json</code>. Wil je weg? Je neemt je
-              data, je QR-codes en je eigen domein gewoon mee.
+              {t("about.why.body2Prefix")} <code className="font-mono text-xs">.json</code>
+              {t("about.why.body2Suffix")}
             </p>
           </div>
 
@@ -382,42 +412,40 @@ export default function About() {
 
         <section className="mt-10 rounded-3xl border border-border bg-foreground p-6 text-center text-background shadow-sm sm:p-8">
           <h2 className="font-serif text-xl font-semibold sm:text-2xl">
-            Claim jouw soevereine handle
+            {t("about.claimCta.title")}
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-sm opacity-80">
-            rout.be/jouwnaam — gratis, zonder tracking, met vector-QR en eigen domein wanneer je
-            eraan toe bent.
+            {t("about.claimCta.body")}
           </p>
           <Link
             to="/auth"
             className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-background px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
           >
-            Claim je handle
+            {t("about.claimCta.button")}
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </section>
 
         <section className={`mt-10 text-center ${CARD}`}>
           <h2 className="font-serif text-xl font-semibold text-foreground sm:text-2xl">
-            Klaar om je naam te claimen?
+            {t("about.finalCta.title")}
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
-            Gratis beginnen, later verifiëren. Je profiel blijft van jou — exporteerbaar,
-            verwijderbaar en zonder platformcommissie op wat je verdient.
+            {t("about.finalCta.body")}
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/auth"
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
             >
-              Maak je profiel
+              {t("about.finalCta.primaryButton")}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
             <Link
               to="/verify"
               className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium text-foreground transition-colors hover:bg-accent"
             >
-              Hoe verificatie werkt
+              {t("about.finalCta.secondaryButton")}
             </Link>
           </div>
         </section>
